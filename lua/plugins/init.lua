@@ -14,3 +14,6 @@ local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
 require 'plugins.load'
+
+-- Set theme
+vim.cmd.colorscheme 'catppuccin_darker'

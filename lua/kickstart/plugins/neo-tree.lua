@@ -20,6 +20,8 @@ return {
       window = {
         mappings = {
           ['\\'] = 'close_window',
+          ['<bs>'] = 'close_node',
+          ['<space>'] = 'none',
         },
       },
     },
