@@ -386,6 +386,46 @@ require('lazy').setup({
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         require('lspconfig')[server_name].setup(server)
       end
+
+      -- LSP Warmup
+      vim.api.nvim_create_autocmd('VimEnter', {
+        callback = function(event)
+          local cwd = vim.fn.getcwd()
+
+          local servers = vim.tbl_extend('force', mason_servers, non_mason_servers)
+          for server_name, config in pairs(servers) do
+            -- Check if we've opened a project with the right files
+            local is_workspace = false
+            for _, pattern in ipairs(config['root_markers'] or {}) do
+              if vim.fn.glob(cwd .. '/' .. pattern) ~= '' then
+                is_workspace = true
+                break
+              end
+            end
+
+            if is_workspace then
+              -- Create a temporary buffer so LSP gets triggered
+              local buf = vim.api.nvim_create_buf(false, false)
+
+              -- Set appropriate filetypes for the LSP
+              for _, filetype in ipairs(require('lspconfig')[server_name]['filetypes'] or {}) do
+                vim.api.nvim_buf_set_option(buf, 'filetype', filetype)
+              end
+
+              -- Clean up the buffer after the LSP has warmed up
+              vim.api.nvim_create_autocmd('LspAttach', {
+                buffer = buf,
+                once = true,
+                callback = function()
+                  vim.defer_fn(function()
+                    vim.api.nvim_buf_delete(buf, { force = true })
+                  end, 1000)
+                end,
+              })
+            end
+          end
+        end,
+      })
     end,
   },
 
