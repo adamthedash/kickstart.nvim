@@ -449,9 +449,18 @@ require('lazy').setup({
           }
         end
       end,
+      formattters = {
+        dioxus = {
+          command = 'dx',
+          args = { 'fmt', '-f', '$FILENAME' },
+        },
+      },
       formatters_by_ft = {
         lua = { 'stylua' },
-        rust = { 'rustfmt' },
+        rust = {
+          'rustfmt',
+          'dioxus',
+        },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -523,8 +532,8 @@ require('lazy').setup({
         ['<C-e>'] = { 'select_and_accept', 'fallback' },
         ['<Esc>'] = { 'cancel', 'fallback' },
         ['<C-k>'] = { 'show_signature', 'fallback' },
-        ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
-        ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+        ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
+        ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
         ['<C-Space>'] = { 'show', 'show_documentation', 'hide_documentation' },
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
