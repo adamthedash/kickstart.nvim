@@ -363,7 +363,6 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_extend('force', vim.tbl_keys(mason_servers), {
         'stylua', -- Used to format Lua code
       })
-      print(ensure_installed)
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
@@ -376,7 +375,7 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            vim.lsp.config(server_name, server)
           end,
         },
       }
@@ -384,7 +383,8 @@ require('lazy').setup({
       -- Non-Mason servers
       for server_name, server in pairs(non_mason_servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-        require('lspconfig')[server_name].setup(server)
+        vim.lsp.config(server_name, server)
+        vim.lsp.enable(server_name)
       end
 
       -- LSP Warmup
@@ -408,7 +408,7 @@ require('lazy').setup({
               local buf = vim.api.nvim_create_buf(false, false)
 
               -- Set appropriate filetypes for the LSP
-              for _, filetype in ipairs(require('lspconfig')[server_name]['filetypes'] or {}) do
+              for _, filetype in ipairs(vim.lsp.config[server_name]['filetypes'] or {}) do
                 vim.api.nvim_buf_set_option(buf, 'filetype', filetype)
               end
 
