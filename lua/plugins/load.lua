@@ -347,7 +347,6 @@ require('lazy').setup({
             },
           },
         },
-        stylua = {},
 
         -- Python
         pyrefly = {
@@ -359,11 +358,16 @@ require('lazy').setup({
             },
           },
         },
-        ruff = {},
       }
       local servers = vim.tbl_extend('force', mason_servers, non_mason_servers)
 
-      require('mason-tool-installer').setup { ensure_installed = vim.tbl_keys(mason_servers) }
+      -- Other things to be installed, but not configured as LSPs
+      local mason_other = {
+        'stylua',
+        'ruff',
+      }
+
+      require('mason-tool-installer').setup { ensure_installed = vim.tbl_deep_extend('force', vim.tbl_keys(mason_servers), mason_other) }
 
       -- Configure servers
       for server_name, server in pairs(servers) do
@@ -445,7 +449,7 @@ require('lazy').setup({
           'rustfmt',
           'dioxus',
         },
-        python = { 'ruff' },
+        python = { 'ruff_fix', 'ruff_format', 'ruff_organize_imports' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
