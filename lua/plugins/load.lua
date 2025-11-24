@@ -303,6 +303,7 @@ require('lazy').setup({
 
       ---@type table<string, vim.lsp.Config>
       local non_mason_servers = {
+        -- Rust
         rust_analyzer = {
           root_markers = { 'Cargo.toml' },
           settings = {
@@ -331,6 +332,7 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        -- Lua
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -347,6 +349,7 @@ require('lazy').setup({
         },
         stylua = {},
 
+        -- Python
         pyrefly = {
           settings = {
             python = {
@@ -356,10 +359,11 @@ require('lazy').setup({
             },
           },
         },
+        ruff = {},
       }
       local servers = vim.tbl_extend('force', mason_servers, non_mason_servers)
 
-      require('mason-tool-installer').setup { ensure_installed = mason_servers }
+      require('mason-tool-installer').setup { ensure_installed = vim.tbl_keys(mason_servers) }
 
       -- Configure servers
       for server_name, server in pairs(servers) do
@@ -441,6 +445,7 @@ require('lazy').setup({
           'rustfmt',
           'dioxus',
         },
+        python = { 'ruff' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
