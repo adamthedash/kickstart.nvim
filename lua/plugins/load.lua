@@ -345,43 +345,24 @@ require('lazy').setup({
             },
           },
         },
-      }
+        stylua = {},
 
-      -- Ensure the servers and tools above are installed
-      --
-      -- To check the current status of installed tools and/or manually install
-      -- other tools, you can run
-      --    :Mason
-      --
-      -- You can press `g?` for help in this menu.
-      --
-      -- `mason` had to be setup earlier: to configure its options see the
-      -- `dependencies` table for `nvim-lspconfig` above.
-      --
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_extend('force', vim.tbl_keys(mason_servers), {
-        'stylua', -- Used to format Lua code
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = mason_servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            vim.lsp.config(server_name, server)
-          end,
+        pyrefly = {
+          settings = {
+            python = {
+              pyrefly = {
+                displayTypeErrors = 'force-on',
+              },
+            },
+          },
         },
       }
+      local servers = vim.tbl_extend('force', mason_servers, non_mason_servers)
 
-      -- Non-Mason servers
-      for server_name, server in pairs(non_mason_servers) do
+      require('mason-tool-installer').setup { ensure_installed = mason_servers }
+
+      -- Configure servers
+      for server_name, server in pairs(servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         vim.lsp.config(server_name, server)
         vim.lsp.enable(server_name)
@@ -392,7 +373,6 @@ require('lazy').setup({
         callback = function(event)
           local cwd = vim.fn.getcwd()
 
-          local servers = vim.tbl_extend('force', mason_servers, non_mason_servers)
           for server_name, config in pairs(servers) do
             -- Check if we've opened a project with the right files
             local is_workspace = false
