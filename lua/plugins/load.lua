@@ -416,6 +416,13 @@ require('lazy').setup({
       })
     end,
   },
+  {
+    'saecki/crates.nvim',
+    event = { 'BufRead Cargo.toml' },
+    config = function()
+      require('crates').setup()
+    end,
+  },
 
   { -- Autoformat
     'stevearc/conform.nvim',
